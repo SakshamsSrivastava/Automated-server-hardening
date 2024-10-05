@@ -1,0 +1,28 @@
+---  
+- name: Automated Threat Response  
+  hosts: linux_servers  
+  become: true  
+  
+  tasks:  
+  - name: Detect threats using Snort  
+   snort:  
+    config: /etc/snort/snort.conf  
+    rules: /etc/snort/rules/snort.rules  
+    alert: /var/log/snort/alert  
+  
+  - name: Detect threats using Suricata  
+   suricata:  
+    config: /etc/suricata/suricata.yaml  
+    rules: /etc/suricata/rules/snort.rules  
+    alert: /var/log/suricata/alert  
+  
+  - name: Respond to threats using Ansible  
+   block:  
+    - name: Block IP address  
+      iptables:  
+       chain: INPUT  
+       protocol: tcp  
+       source: "{{ item }}"  
+       jump: DROP  
+      loop:  
+       - xxx.xxx.xxx.xxx
