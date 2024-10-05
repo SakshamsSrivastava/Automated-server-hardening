@@ -39,3 +39,18 @@
     level: INFO  
     facility: auth  
     target: /var/log/auth.log
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Enforce password complexity
+      lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: '^minlen'
+        line: 'minlen = 12'
+
+    - name: Set password expiry
+      lineinfile:
+        path: /etc/login.defs
+        regexp: '^PASS_MAX_DAYS'
+        line: 'PASS_MAX_DAYS 90'
