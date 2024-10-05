@@ -1,0 +1,36 @@
+---  
+- name: ELK Stack Configuration  
+  hosts: elk_stack  
+  become: true  
+  
+  tasks:  
+  - name: Install and configure Elasticsearch  
+   apt:  
+    name: elasticsearch  
+    state: present  
+   elasticsearch:  
+    cluster.name: my_cluster  
+    node.name: my_node  
+  
+  - name: Install and configure Logstash  
+   apt:  
+    name: logstash  
+    state: present  
+   logstash:  
+    input:  
+      - file:  
+        path: /var/log/snort/alert  
+        type: snort  
+    output:  
+      - elasticsearch:  
+        hosts: ["localhost:9200"]  
+        index: snort-alerts  
+  
+  - name: Install and configure Kibana  
+   apt:  
+    name: kibana  
+    state: present  
+   kibana:  
+    server.name: my_kibana  
+    server.host: "0.0.0.0"  
+    server.port: 5601
