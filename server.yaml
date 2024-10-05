@@ -1,0 +1,41 @@
+---  
+- name: Server Hardening  
+  hosts: linux_servers  
+  become: true  
+  
+  tasks:  
+  - name: Update and upgrade packages  
+   apt:  
+    update_cache: yes  
+    upgrade: yes  
+  
+  - name: Install and configure firewall  
+   apt:  
+    name: ufw  
+    state: present  
+   ufw:  
+    state: enabled  
+    default: deny  
+  
+  - name: Configure SSH  
+   sshd:  
+    port: 22  
+    protocol: 2  
+    permit_root_login: no  
+    password_authentication: no  
+  
+  - name: Disable unnecessary services  
+   service:  
+    name: "{{ item }}"  
+    state: stopped  
+    enabled: no  
+   loop:  
+    - bluetooth  
+    - cups  
+    - nfs-server  
+  
+  - name: Configure logging  
+   logging:  
+    level: INFO  
+    facility: auth  
+    target: /var/log/auth.log
